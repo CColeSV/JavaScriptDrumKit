@@ -1,7 +1,12 @@
+* {
+  box-sizing: border-box;
+}
+
 html {
   font-size: 10px;
   background: url(http://i.imgur.com/b9r5sEL.jpg) bottom center;
   background-size: cover;
+  overflow: hidden;
 }
 
 body,html {
@@ -13,8 +18,8 @@ body,html {
 .keys {
   display: flex;
   flex: 1;
-  min-height: 100vh;
-  align-items: center;
+  min-height: 50vh;
+  align-items: flex-end;
   justify-content: center;
 }
 
@@ -48,4 +53,79 @@ kbd {
   text-transform: uppercase;
   letter-spacing: .1rem;
   color: #ffc600;
+}
+
+
+.buttons-container {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.record-button {
+  background: none;
+  border: none;
+  color: rgb(243, 234, 234);
+  background-color: rgba(172, 26, 26, 0.95);
+  border-radius: 1rem;
+  padding: 1.2rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.playback-container {
+  border-width: 2px 2px 0 2px;
+  border-color: silver;
+  border-style: solid;
+  background-color: rgba(0,0,0,0.8);
+  height: 40vh;
+  width: 40%;
+}
+
+.playback-title {
+  color: white;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.pt-container {
+  height: 15%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 0.2rem solid white;
+}
+
+.track-list {
+  height: 85%;
+  width: 100%;
+  padding: 0;
+}
+
+.track-item {
+  display: flex;
+  border-bottom: 0.1rem solid rgba(255,255,255,0.2);
+  width: 100%;
+  padding: .7rem;
+}
+
+.play-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 30%; 
+  background-color: rgb(20, 116, 20);
+  border-radius: 0.1rem;
+  box-shadow: 0.1rem 0.1rem 0.1rem 0.1rem rgba(0,0,0, 0.3);
+  margin-right: 10%;
+}
+
+.track-text {
+  color: white;
+  width: 80%;
+  text-align: left;
+  font-size: 1.2rem;
 }
