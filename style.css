@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 
-html {
+body {
   font-size: 10px;
   background: url(http://i.imgur.com/b9r5sEL.jpg) bottom center;
   background-size: cover;
@@ -109,6 +109,8 @@ kbd {
   border-bottom: 0.1rem solid rgba(255,255,255,0.2);
   width: 100%;
   padding: .7rem;
+  font-weight: bold;
+  font-size: 2rem;
 }
 
 .play-button {
