@@ -1,24 +1,32 @@
-tracklistObject = [];
+playableTrack = []; //one track that holds multiple objects (keyframes & timestamps) - each index is an object
+listOfPlayableTracks = []; //holds the list of each track - each index is track
+let timerIDs = []; //
+let playingSoundFlag = false;
+let trackNumber = 0;
+let currentTime = 0;
+const keys = Array.from(document.querySelectorAll('.key'));  
+
 
   function removeTransition(e) {
     if(e.propertyName !== 'transform') return;
     this.classList.remove('playing');
   };
 
-  const keys = Array.from(document.querySelectorAll('.key'));
+  // const keys = Array.from(document.querySelectorAll('.key'));
   keys.forEach(key => {
-    key.addEventListener('transitionend', removeTransition)}
+      key.addEventListener('transitionend', removeTransition)
+    }
   );
 
   const recordButton = document.querySelector('.record-button');
   // console.log(recordButton);
 
-  let trackNumber = 0;
-  let currentTime = 0;
+
 
   window.addEventListener('keydown', function(e) {
-    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-    const keys = Array.from(document.querySelectorAll('.key'));
+    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);  // audio[data-key="65"]
+    // const audio = document.querySelector("audio[data-key=" + e.keyCode + "]");  // audio[data-key="65"]
+    // const keys = Array.from(document.querySelectorAll('.key'));
     const key = document.querySelector(`.key[data-key="${e.keyCode}"]`);
     if(!audio) return;
     audio.currentTime = 0;
@@ -27,9 +35,11 @@ tracklistObject = [];
 
     if(recordButton.innerHTML === "Stop Record"){
       let timePressed = Date.now();
+      console.log('date now', Date.now());
       let timeStamp = timePressed - currentTime;
-
-      tracklistObject.push(
+      console.log('timestamp', timeStamp);
+      
+      playableTrack.push(
         { 
           playIndex: keys.indexOf(key),
           timeStamp: timeStamp  
@@ -38,54 +48,73 @@ tracklistObject = [];
     }
   });
 
-  function handlePlayback(e){
-    // console.log("play button" , e.target);
-    const keys = Array.from(document.querySelectorAll('.key'));
-    const key = keys[tracklistObject[0].playIndex];
-    console.log(tracklistObject[0].playIndex);
-    console.log(keys);
-    const keyCode = key.getAttribute('data-key');
-    console.log("attribute", keyCode);
-    //get attribute of data-key
-    //pass data-key to audio
-    //call audio.play()
-    const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
-    console.log(audio);
-    audio.play();
 
+  function createScheduler(lastNote, audioElement, timeStamp){
+    const timeoutID = setTimeout(() => {
+      audioElement.currentTime = 0;
+      audioElement.play();
+
+      if(lastNote) {
+        timerIDs = [];
+      }
+    }, timeStamp);
+
+    return timeoutID;
+  }
+
+  function handlePlayback(e){
+    if(timerIDs.length > 0){
+      timerIDs.forEach((id) => clearTimeout(id));
+    }
+    // const keys = Array.from(document.querySelectorAll('.key'));
+
+    const playableTrack = listOfPlayableTracks[trackNumber - 1];
+    console.log(trackNumber);
+    for(let i = 0; i < playableTrack.length; i++){
+      const key = keys[playableTrack[i].playIndex];
+      const keyCode = key.getAttribute('data-key');
+      const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+
+      const timeStamp = playableTrack[i].timeStamp;
+      const id = i === playableTrack.length ? createScheduler(false, audio, timeStamp) : createScheduler(true, audio, timeStamp)
+      timerIDs.push(id);
+    }
   }
 
   function recording() {
-    console.log('click event happened, this function ran');
-
-    console.log(recordButton.innerHTML);
     if(recordButton.innerHTML === "Record"){
-      tracklistObject = [];
+      playableTrack = [];
       currentTime = Date.now();
       console.log("Start Recording at.." + currentTime);
       recordButton.innerHTML = "Stop Record";
     }else{
-      const li = document.createElement('li');
-      const button = document.createElement('button');
-      const paragraph = document.createElement('p');
-      const ul = document.querySelector('.track-list');
+      if(playableTrack.length > 0){
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        const paragraph = document.createElement('p');
+        const ul = document.querySelector('.track-list');
+    
+        li.setAttribute('class','track-item');
+        button.setAttribute('class','play-button');
+        paragraph.setAttribute('class','track-text');
+    
+        trackNumber = trackNumber + 1;
+    
+        // button.appendChild(document.createTextNode('Play'));
+        button.innerHTML = 'Play';
+        paragraph.appendChild(document.createTextNode(`Track ${trackNumber}`));
   
-      li.setAttribute('class','track-item');
-      button.setAttribute('class','play-button');
-      paragraph.setAttribute('class','track-text');
-  
-      trackNumber = trackNumber + 1;
-  
-      button.appendChild(document.createTextNode('Play'));
-      paragraph.appendChild(document.createTextNode(`Track ${trackNumber}`));
-
-      button.addEventListener('click', handlePlayback);
-  
-      li.appendChild(button);
-      li.appendChild(paragraph);
-  
-      ul.appendChild(li);
-      recordButton.innerHTML = "Record"
+        button.addEventListener('click', handlePlayback);
+    
+        li.appendChild(button);
+        li.appendChild(paragraph);
+    
+        ul.appendChild(li);
+        recordButton.innerHTML = "Record"
+        listOfPlayableTracks.push(playableTrack);
+      }else{
+        recordButton.innerHTML = "Record"
+      }
     }
   }
   
